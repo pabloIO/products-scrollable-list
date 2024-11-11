@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Product, UseProductsResult } from '@models/Products';
+import { Product, UseProductResult } from '@models/Products';
 
-const useProducts = (): UseProductsResult => {
-    const [products, setProducts] = useState<Product[] | null>(null);
+const useProduct = (productId: number): UseProductResult => {
+    const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchProducts = async () => {
+        const fetchProduct = async () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.get<Product[]>('https://api.escuelajs.co/api/v1/products');
-            setProducts(response.data);
+            const response = await axios.get<Product>(`https://api.escuelajs.co/api/v1/products/${productId}`);
+            setProduct(response.data);
         } catch (err) {
             if (axios.isAxiosError(err)) {
             setError(err.message);
@@ -25,10 +25,10 @@ const useProducts = (): UseProductsResult => {
         }
         };
 
-        fetchProducts();
-    }, []);
+        fetchProduct();
+    }, [productId]);
 
-    return { products, loading, error };
+    return { product, loading, error };
 };
 
-export default useProducts;
+export default useProduct;
