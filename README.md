@@ -50,3 +50,9 @@ If iOS fails, enter ios directory and install Pods again:
   pod install
 ```
 
+Run tests
+
+```bash
+  npm run test
+```
+
