@@ -1,5 +1,6 @@
 import { SearchBar } from '@rneui/themed';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useDebounceInput } from '@utils/useDebounce';
 
 interface IProductSearchProps {
     loading: boolean;
@@ -13,6 +14,14 @@ function ProductSearch({
 
     const [query, setQuery] = useState('');
 
+    // Debounce the query state
+    const debouncedQuery = useDebounceInput(query, 500); 
+
+    // Effect to call handleSearch whenever debouncedQuery changes
+    useEffect(() => {
+        handleSearch(debouncedQuery);
+    }, [debouncedQuery]);
+
     function handleChangeText(text: string){
         setQuery(text);
     }
@@ -23,7 +32,6 @@ function ProductSearch({
             placeholder="Search products..."
             onChangeText={handleChangeText}
             value={query}
-            onEndEditing={() => handleSearch(query)}
             showLoading={loading}
         />
     );

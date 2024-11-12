@@ -17,15 +17,14 @@ function ProductList({
     route
 }: RootStackScreenProps<'Products'>){
 
-    // Initialize the hook with an offset and limit
+    // init get products hook
     const { isFetchingMore, loading, error, fetchProducts, fetchMore } = useProducts();
-    // search api
-    const { products: productSearch, loading: productSearchLoading, error: productSearchError, fetchProductsByTitle } 
+    // init search products hook
+    const { products: productSearch, loading: productSearchLoading, fetchProductsByTitle } 
         = useProductSearch();
     const [filteredResults, setFilteredResults] = useState<Product[]>([]);
     const [searchActive, setSearchActive] = useState(false);
-
-
+    // store
     const productsStore = useProductsStore((state) => state.products);
 
     useEffect(() => {
@@ -48,11 +47,14 @@ function ProductList({
 
     // Load more products function for pagination
     function handleLoadMore() {
-        if (productSearch.length > 0 || filteredResults.length === 0){
+        if (
+            productSearch.length > 0 && filteredResults.length > 0 ){
+            return;
+        }
+        if (productSearchLoading || searchActive){
             return;
         }
         if (!isFetchingMore) {
-            console.log('hey hey')
             fetchMore();
         }
     }
@@ -60,6 +62,7 @@ function ProductList({
     function handleSearch (query: string){
         if (query === ''){
             setSearchActive(false);
+            setFilteredResults([]);
         } else {
             setSearchActive(true);
             fetchProductsByTitle(query);
@@ -93,7 +96,7 @@ function ProductList({
             }
             ListEmptyComponent={
                 loading ? <ProductListLoader /> : (
-                    filteredResults.length === 0 && <ProductsListEmpty />
+                    !productSearchLoading && filteredResults.length === 0 && <ProductsListEmpty />
                   ) || null
             }
             ListFooterComponent={

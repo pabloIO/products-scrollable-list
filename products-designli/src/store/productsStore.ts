@@ -6,6 +6,7 @@ import { productsZustandStorage } from './persistStoreMmkv';
 export interface ProductsState {
     products: Product[];
     setProducts: (products: Product[]) => void;
+    updateProducts: (products: Product[]) => void;
 };
 
 const INITIAL_STATE = {
@@ -16,7 +17,11 @@ const useProductsStore = create<ProductsState>()(
     persist(
         set => ({
             products: INITIAL_STATE.products,
-            setProducts: (newProducts: Product[]) =>
+            setProducts: (products: Product[]) =>
+                set((state) => ({
+                  products,  
+                })),
+            updateProducts: (newProducts: Product[]) =>
                 set((state) => {
                     // Check for new data before updating state to avoid unnecessary re-renders
                     const isDataNew = newProducts.some(
