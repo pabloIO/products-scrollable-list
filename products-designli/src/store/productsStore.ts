@@ -12,14 +12,18 @@ const INITIAL_STATE = {
     products: [],
 };
 
-const productsStore = create<ProductsState>()(
+const useProductsStore = create<ProductsState>()(
     persist(
         set => ({
             products: INITIAL_STATE.products,
             setProducts: (newProducts: Product[]) =>
-                set((state) => ({
-                    products: [ ...state.products, ...newProducts ], 
-                })),
+                set((state) => {
+                    // Check for new data before updating state to avoid unnecessary re-renders
+                    const isDataNew = newProducts.some(
+                        newProduct => !state.products.some(existing => existing.id === newProduct.id)
+                    );
+                    return isDataNew ? { products: [...state.products, ...newProducts] } : state;
+                }),
         }),
         {
             name: 'products-storage',
@@ -28,4 +32,4 @@ const productsStore = create<ProductsState>()(
     ),
 );
 
-export default productsStore;
+export default useProductsStore;

@@ -8,6 +8,7 @@ export type RootStackParamList = {
     Products: undefined;
     ProductDetail: {
         id: number;
+        title: string;
     };
 };
 // Props for rootstack screen

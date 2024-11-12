@@ -1,6 +1,15 @@
-function ProductsScreen(){
+import type { RootStackScreenProps } from "@models/Navigation";
+import ProductList from "@components/products/ProductList";
+
+function ProductsScreen({
+    navigation,
+    route
+}: RootStackScreenProps<'Products'>){
     return (
-        null
+        <ProductList
+            navigation={navigation}
+            route={route}
+        />
     );
 }
 

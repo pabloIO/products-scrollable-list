@@ -1,34 +1,64 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Product, UseProductsResult } from '@models/Products';
+import useProductsStore from '@store/productsStore';
 
-const useProducts = (): UseProductsResult => {
-    const [products, setProducts] = useState<Product[] | null>(null);
+const useProducts = (initialOffset: number = 0, initialLimit: number = 10): UseProductsResult => {
+    // const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const [offset, setOffset] = useState<number>(initialOffset);
+    const [limit, setLimit] = useState<number>(initialLimit);
+    const [isFetchingMore, setIsFetchingMore] = useState(false);
 
-    useEffect(() => {
-        const fetchProducts = async () => {
+    const setProducts = useProductsStore((state) => state.setProducts);
+
+  
+    // Function to fetch products lazily
+    const fetchProducts = useCallback(async (customOffset: number = 0, customLimit: number = limit) => {
+        // Add a check to avoid re-fetching if data is already present
+        // if (productsStore.length > 0 && customOffset === 0) return;
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.get<Product[]>('https://api.escuelajs.co/api/v1/products');
-            setProducts(response.data);
-        } catch (err) {
-            if (axios.isAxiosError(err)) {
-            setError(err.message);
-            } else {
-            setError('An unexpected error occurred');
+            const response = await axios.get<Product[]>(`${process.env.EXPO_PUBLIC_API_URL}/products`, {
+                params: {
+                    offset: customOffset,
+                    limit: customLimit,
+                },
+            });
+            if (response.data && response.data.length > 0) {
+                setProducts(response.data);
+                setOffset(customOffset + customLimit); // Update the offset for the next fetch
             }
+        } catch (err) {
+            setError('Error fetching products');
         } finally {
             setLoading(false);
         }
-        };
-
-        fetchProducts();
     }, []);
 
-    return { products, loading, error };
-};
-
-export default useProducts;
+    // Function to fetch more data (for pagination)
+    const fetchMore = async () => {
+      setIsFetchingMore(true);
+      setError(null);
+      try {
+        const response = await axios.get<Product[]>(`${process.env.EXPO_PUBLIC_API_URL}/products`, {
+          params: {
+            offset,
+            limit,
+          },
+        });
+        setProducts(response.data);
+        setOffset(offset + limit); // Increment the offset for subsequent calls
+      } catch (err) {
+        setError('Error fetching more products');
+      } finally {
+        setIsFetchingMore(false);
+      }
+    };
+  
+    return { isFetchingMore, loading, error, fetchProducts, fetchMore };
+  };
+  
+  export default useProducts;
