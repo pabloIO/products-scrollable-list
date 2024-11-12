@@ -9,7 +9,6 @@ import useProductSearch from "@api/useProductSearch";
 import ProductListLoader from "./ProductListLoader.skeleton";
 import ProductsListError from "./ProductsListError";
 import ProductCard from "./ProductCard";
-import { Text } from "@rneui/base";
 import ProductsListEmpty from "./ProductListEmpty";
 
 function ProductList({
@@ -32,11 +31,9 @@ function ProductList({
     }, [])
 
     useEffect(() => {
-        console.log('search', productSearch)
         if (productSearch && productSearch.length > 0) {
             setFilteredResults(productSearch);
         } else {
-            console.log('set empyty')
             setFilteredResults([]);
         }
     }, [productSearch]);
@@ -85,6 +82,7 @@ function ProductList({
 
     return (
         <FlatList
+            testID="product-list-flatlist"
             data={displayData}
             renderItem={renderItem}
             keyExtractor={(item) => item.id.toString()}

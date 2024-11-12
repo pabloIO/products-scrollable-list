@@ -27,7 +27,6 @@ const useProducts = (initialOffset: number = 0, initialLimit: number = 10): UseP
                     limit: customLimit,
                 },
             });
-            console.log(response.data);
             if (response.data && response.data.length > 0) {
                 setProducts(response.data);
                 setOffset(customOffset + customLimit); // Update the offset for the next fetch
