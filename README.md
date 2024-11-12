@@ -1,5 +1,6 @@
 
 # Designli Mobile Team - Tech Challenge
+## Author: Pablo Montes Jordan
 
 To run this project clone this repository to your local computer and enter the project directory:
 
